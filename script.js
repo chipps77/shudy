@@ -440,6 +440,9 @@ function goPage(url) {
 }
 
 window.onload = () => {
+  
+  idol.src = "sit.png";
+
   updateFullscreenButton();
   const skin = localStorage.getItem("current_skin");
   if (skin === "v2") {
