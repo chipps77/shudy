@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=IBM+Plex+Sans+Condensed&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8" />
+  <title>陪你讀SHU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body onclick="handleClick(event)">
+<div class="hamburger" id="hamburger" onclick="toggleMenu()">☰</div>
+<div id="sideMenu" class="side-menu">
+  <button onclick="goPage('bag.html')">backpack</button>
+  <button onclick="goPage('store.html')">store</button>
+  <button onclick="goPage('todo_list.html')">to do list </button>
+  <button onclick="goPage('name.html')">change name </button>
+  <button id="fullscreenBtn" onclick="toggleFullscreen()"
+</button>
+
+
+
+</div>
+
+
+  <div class="main-wrapper">
+  <div id="idolTitle">Shu陪你讀SHU</div>
+  <div id="time" onclick="customizeTimer()">25:00</div>
+  <div class="idolTextWrapper">
+    <div id="idolText">　</div>
+  </div>
+  <div class="plates">🍽️ 盤子數量：<span id="plateCount">0</span></div>
+  <div class="buttons">
+    <button onclick="startTimer()">開始</button>
+    <button onclick="pauseTimer()">暫停</button>
+    <button onclick="resetTimer()">重設</button>
+  </div>
+<div id="progressWrapper">
+  <div id="progressBar"></div>
+</div>
+</div>
+
+<img id="idol" src="sit.png" style="position:absolute;  width:64px; height:64px; z-index:10; image-rendering:pixelated;" />
+
+<img id="dogHaku" src="haku_sit.PNG"
+     style="position:absolute; width:48px; height:48px; z-index:9; display:none; image-rendering:pixelated;" />
+<img id="dogMata" src="mata_sit.PNG"
+     style="position:absolute; width:48px; height:48px; z-index:9; display:none; image-rendering:pixelated;" />
+<img id="dogMoya" src="moya_sit.png"
+     style="position:absolute; width:50px; height:50px; z-index:9; display:none; image-rendering:pixelated;" />
+
+
+
+
+
+
+  <div id="heartTrail"></div>
+  <script src="script.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+   <link href="https://cdn.jsdelivr.net/gh/Unifoundry/Unifont@14.0.01/font-builds/unifont.min.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <title>背包</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      
+      font-family: monospace;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+   }
+
+    .card h1 {
+      text-align: center;
+      font-family: 'Press Start 2P', cursive; /* 如果你用了像素風字體 */
+      font-size: 16px;
+      margin-top: 20;
+      margin-bottom: 10px;
+   }
+
+    .item-button {
+      display: inline-block;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .item-button:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+
+    .card-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .card {
+      background: #fff;
+      border: 4px solid #000;
+      border-radius: 24px;
+      box-shadow: 8px 8px 0 #000;
+      padding: 32px;
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #idolStatic {
+      width: 128px;
+      height: 128px;
+      image-rendering: pixelated;
+      align-self: center;
+    }
+
+    
+
+    .pixel-bar {
+     display: flex;
+     gap: 2px;
+     justify-content: center;
+     margin: 6px auto 0 auto; 
+     width: fit-content;
+   }
+
+
+    .idolTextWrapper {
+      display: flex;
+      justify-content: center;
+    }
+
+    #idolText {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      color: #000;
+      background-color: #fff;
+      padding: 10px 16px;
+      border: 4px solid #000;
+      border-radius: 8px;
+      box-shadow: 4px 4px 0 #000;
+      text-align: center;
+      line-height: 1.3;
+      transition: opacity 0.3s ease;
+    }
+
+    /* 💡 沒有內容時讓對話框完全消失 */
+    #idolText:empty {
+      display: none;
+    }
+
+    button {
+      font-size: 14px;
+      font-family: sans-serif;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .idol-info {
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="card-wrapper">
+
+      <!-- 左邊卡片：偶像區 -->
+      <div class="card">
+        <img id="idolStatic" src="sit.png" />
+        <div class="idol-info">
+          等級：<span id="idolLevel">1</span><br/>
+          經驗值：<span id="idolExp">0</span> / <span id="expToNext">100</span>
+          <div id="expBarContainer" class="pixel-bar"></div>
+        </div>
+        <div class="idolTextWrapper">
+          <div id="idolText"></div>
+        </div>
+      </div>
+
+      <!-- 右邊卡片：背包區 -->
+      <div class="card">
+        <h1>backpack</h1>
+
+<!-- 分頁標籤 -->
+<div class="tabs">
+  <div class="tab active" data-tab="food" onclick="switchTab('food')">🍽️ 食物</div>
+  <div class="tab" data-tab="decor" onclick="switchTab('decor')">🖼️ 裝飾</div>
+</div>
+
+<!-- 固定高度的內容容器 -->
+<div class="tab-content-container">
+  <div class="tab-panel active" id="tab_food">
+    <div class="item-button">🍰 蛋糕：<span id="cake">0</span></div>
+    <div class="item-button">🥬 蔬菜：<span id="vege">0</span></div>
+    <div class="item-button">🍛 泡菜炒飯：<span id="kimchi_rice">0</span></div>
+    <div class="item-button">🍚 白飯：<span id="rice">0</span></div>
+  </div>
+
+  <div class="tab-panel" id="tab_decor">
+  <div class="item-button" onclick="changeSkin()">👗 新造型：<span id="skin_v2">❌</span></div>
+  <div class="item-button" onclick="changeDecor()">🌼 裝飾品：<span id="bg_flower">❌</span></div>
+  <div class="item-button" onclick="toggleDogGroup('haku_mata')">🐶 Haku + Mata：<span id="dog_haku_mata">❌</span></div>
+  <div class="item-button" onclick="toggleDogGroup('moya')">🐶 Moya：<span id="dog_moya">❌</span></div>
+</div>
+</div>
+
+
+
+<!-- 回首頁按鈕 -->
+<div class="buttons">
+  <button onclick="goHome()">回首頁</button>
+</div>
+
+
+
+<script>
+  function goHome() {
+
+    localStorage.setItem("fromBag", "true");
+    window.location.href = "index.html";
+  }
+</script>
+
+  
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+
+
+function goHome() {
+    localStorage.setItem("fromBag", "true");
+    window.location.href = "index.html";
+  }
+
+function updateDecorDisplay() {
+  const hasDecor = localStorage.getItem("item_bg_flower") === "true";
+  const current = localStorage.getItem("current_decor");
+  const span = document.getElementById("bg_flower");
+  const button = span.closest(".item-button");
+
+  if (hasDecor) {
+    if (current === "bg_flower") {
+      span.textContent = "✔ 已使用";
+      button.classList.add("in-use");
+    } else {
+      span.textContent = "✔";
+      button.classList.remove("in-use");
+    }
+  } else {
+    span.textContent = "❌";
+    button.classList.remove("in-use");
+  }
+}
+
+
+
+
+    const expTable = {1: 89, 2: 106, 3: 520, 4: 1314, 5: 2000, 6: 2018};
+    const idolName = localStorage.getItem("idolName") || "Shu";
+
+    function expNeeded(level) {
+      return expTable[level] || 99999;
+    }
+
+    function getExpInfo() {
+      return {
+        level: parseInt(localStorage.getItem("idol_level") || "1"),
+        exp: parseInt(localStorage.getItem("idol_exp") || "0")
+      };
+    }
+
+    function updateExpDisplay() {
+      const { level, exp } = getExpInfo();
+      const needed = expNeeded(level);
+      document.getElementById("idolLevel").textContent = level;
+      document.getElementById("idolExp").textContent = exp;
+      document.getElementById("expToNext").textContent = needed;
+
+      const container = document.getElementById("expBarContainer");
+      container.innerHTML = "";
+      const total = 10;
+      const filled = Math.floor((exp / needed) * total);
+      for (let i = 0; i < total; i++) {
+        const block = document.createElement("div");
+        block.style.backgroundColor = i < filled ? "#ff5fa2" : "#fff";
+        container.appendChild(block);
+      }
+    }
+	
+
+function updateDogGroupDisplay(group) {
+  const owned = localStorage.getItem("item_dog_" + group) === "true";
+  const show = localStorage.getItem("dog_display_" + group) === "true";
+  const span = document.getElementById("dog_" + group);
+  const button = span.closest(".item-button");
+
+  if (!owned) {
+    span.textContent = "❌";
+    button.classList.remove("in-use");
+  } else {
+    if (show) {
+      span.textContent = "✔ 顯示中";
+      button.classList.add("in-use");
+    } else {
+      span.textContent = "✔";
+      button.classList.remove("in-use");
+    }
+  }
+}
+
+
+function toggleDogGroup(group) {
+  const owned = localStorage.getItem("item_dog_" + group) === "true";
+  if (!owned) {
+    alert("你還沒擁有這組狗狗唷！");
+    return;
+  }
+
+  const currentlyShown = localStorage.getItem("dog_display_" + group) === "true";
+  localStorage.setItem("dog_display_" + group, (!currentlyShown).toString());
+
+  // 若啟用這組，要關閉另一組
+  if (!currentlyShown) {
+    const other = (group === "haku_mata") ? "moya" : "haku_mata";
+    localStorage.setItem("dog_display_" + other, "false");
+    updateDogGroupDisplay(other);
+  }
+
+  speak((!currentlyShown ? `🐶 ${group} 出場囉～` : `${group} 回去休息了唷～`));
+  updateDogGroupDisplay(group);
+}
+
+
+function updateSkinDisplay() {
+  const hasSkin = localStorage.getItem("item_skin_v2") === "true";
+  const current = localStorage.getItem("current_skin");
+  const span = document.getElementById("skin_v2");
+  const button = span.closest(".item-button");
+
+  if (hasSkin) {
+    if (current === "v2") {
+      span.textContent = "✔ 已穿上";
+      button.classList.add("in-use");
+    } else {
+      span.textContent = "✔";
+      button.classList.remove("in-use");
+    }
+  } else {
+    span.textContent = "❌";
+    button.classList.remove("in-use");
+  }
+}
+
+
+
+    function speak(text) {
+      const bubble = document.getElementById("idolText");
+      const name = idolName;
+      bubble.textContent = "";
+      bubble.style.opacity = "1";
+
+      const fullText = name + "：" + text;
+      let index = 0;
+
+      const typingInterval = setInterval(() => {
+        bubble.textContent += fullText[index];
+        index++;
+        if (index >= fullText.length) {
+          clearInterval(typingInterval);
+          setTimeout(() => {
+            bubble.textContent = "";
+            bubble.style.opacity = "0";
+          }, 5000);
+        }
+      }, 50);
+    }
+
+    function feedIdol(itemKey) {
+      const nameMap = {
+        "cake": "蛋糕", "vege": "蔬菜", "kimchi_rice": "泡菜炒飯", "rice": "白飯"
+      };
+      const expMap = {
+        "cake": 16, "vege": 6, "kimchi_rice": 20, "rice": 6
+      };
+      const reactionMap = {
+        "cake": "是起司的吧～我最喜歡了",
+        "vege": "算你識相，女明星需要葉子",
+        "kimchi_rice": "嗚哇...辣辣的但是好香，可是我在戒澱粉誒",
+        "rice": "我在戒澱粉啦，真是..."
+      };
+      let raw = localStorage.getItem("item_" + itemKey);
+      let count = parseInt(raw);
+      if (isNaN(count) || count <= 0) {
+        alert("你沒有這個食物唷！");
+        return;
+      }
+
+      const confirmFeed = confirm(`要餵${idolName}吃${nameMap[itemKey]}嗎？`);
+      if (confirmFeed) {
+        count -= 1;
+        localStorage.setItem("item_" + itemKey, count.toString());
+        document.getElementById(itemKey).textContent = count;
+
+        let level = parseInt(localStorage.getItem("idol_level") || "1");
+        let exp = parseInt(localStorage.getItem("idol_exp") || "0");
+        exp += expMap[itemKey] || 0;
+
+        let leveledUp = false;
+        while (exp >= expNeeded(level)) {
+          exp -= expNeeded(level);
+          level++;
+          leveledUp = true;
+        }
+	if (level >= 5 && localStorage.getItem("item_skin_v2") !== "true") {
+  	localStorage.setItem("item_skin_v2", "true");
+ 	 speak("我獲得了新造型耶～快去背包看看吧！💖", true);
+	}
+
+
+        localStorage.setItem("idol_exp", exp);
+        localStorage.setItem("idol_level", level);
+        updateExpDisplay();
+
+        speak(reactionMap[itemKey] || `${idolName}好像吃得很開心 💗`);
+
+        if (leveledUp) {
+          alert(`🎉 ${idolName}升級了！目前等級 ${level}！`);
+        }
+      }
+    }
+
+
+   function changeDecor() {
+  const owned = localStorage.getItem("item_bg_flower") === "true";
+  const current = localStorage.getItem("current_decor");
+
+  if (!owned) {
+    alert("你還沒有這個裝飾品唷！");
+    return;
+  }
+
+  if (current === "bg_flower") {
+    const remove = confirm("要移除這個裝飾嗎？🌼");
+    if (remove) {
+      localStorage.removeItem("current_decor");
+      speak("裝飾已經脫掉了喔（羞）");
+      updateDecorDisplay(); // ⬅ 即時更新畫面
+    }
+  } else {
+    const apply = confirm("要套用這個裝飾嗎？🌼");
+    if (apply) {
+      localStorage.setItem("current_decor", "bg_flower");
+      speak("我下次會穿漂亮的唷～");
+      updateDecorDisplay(); // ⬅ 即時更新畫面
+    }
+  }
+}
+
+    
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(el => {
+    el.classList.toggle('active', el.id === 'tab_' + tab);
+  });
+}
+
+window.onload = () => {
+
+updateDogGroupDisplay("haku_mata");
+updateDogGroupDisplay("moya");
+
+
+switchTab('food'); 
+
+
+const skin = localStorage.getItem("current_skin");
+if (skin === "v2") {
+  const idolImg = document.getElementById("idolStatic");
+  idolImg.src = "sit_v2.png";
+}
+
+updateSkinDisplay();
+
+  // 更新裝飾品狀態顯示（✔ / ✔ 已使用 / ❌）
+  updateDecorDisplay();
+
+  // 顯示目前的食物數量
+  ["cake", "vege", "kimchi_rice", "rice"].forEach(item => {
+    document.getElementById(item).textContent =
+      localStorage.getItem("item_" + item) || "0";
+  });
+
+  // 初始化經驗值條與等級文字
+  updateExpDisplay();
+};
+
+  </script>
+</body>
+</html>
+
+

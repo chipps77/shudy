@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>命名你的偶像</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <h1>what's her name? </h1>
+    <input type="text" id="idolNameInput" placeholder="輸入名字..." />
+    <div class="buttons">
+      <button onclick="saveName()">完成命名</button>
+    </div>
+  </div>
+
+  <script>
+    function saveName() {
+      const name = document.getElementById("idolNameInput").value.trim();
+      if (name.length === 0) {
+        alert("請輸入名字唷！");
+        return;
+      }
+      localStorage.setItem("idolName", name);
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>待辦清單</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .todo-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 500px;
+      background-color: #f5f5f5;
+      border: 4px solid #000;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 8px 8px 0 #000;
+    }
+
+    #todoInput {
+      padding: 10px;
+      font-size: 14px;
+      width: 80%;
+      border: 2px solid #000;
+      border-radius: 8px;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .todo-item.done span {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    #todoList {
+      list-style: none;
+      padding: 0;
+      width: 80%;
+    }
+
+    #todoList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#todoList li span {
+  flex: 1;
+}
+
+#todoList li button {
+  font-size: 14px;
+  padding: 4px 8px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background-color: #eee;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+
+    .back-button {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-family: monospace;
+      border: 2px solid #000;
+      border-radius: 6px;
+      background-color: #fff;
+      box-shadow: 3px 3px 0 #000;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="goBack()">回首頁</button>
+  <div class="main-wrapper">
+    <div class="todo-wrapper">
+      <h1>to do list</h1>
+      <ul id="todoList"></ul>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+  <input type="text" id="todoInput" placeholder="輸入一件事..." />
+  <button onclick="addTodo()">新增</button>
+  <button onclick="deleteSelected()">刪除已完成項目</button>
+</div>
+    </div>
+  </div>
+
+  <script>
+   function deleteSelected() {
+  const list = JSON.parse(localStorage.getItem("todoList") || "[]");
+  const doneItems = list.filter(item => item.done);
+  if (doneItems.length === 0) {
+    alert("目前沒有已完成項目可刪除。");
+    return;
+  }
+  if (confirm(`將刪除 ${doneItems.length} 項已完成事項，是否繼續？`)) {
+    const newList = list.filter(item => !item.done);
+    localStorage.setItem("todoList", JSON.stringify(newList));
+    renderTodo();
+  }
+}
+
+    function addTodo() {
+      const input = document.getElementById("todoInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const item = {
+        text,
+        done: false
+      };
+
+      const list = JSON.parse(localStorage.getItem("todoList") || "[]");
+      list.push(item);
+      localStorage.setItem("todoList", JSON.stringify(list));
+      input.value = "";
+      renderTodo();
+    }
+
+    function toggleDone(index) {
+      const list = JSON.parse(localStorage.getItem("todoList") || "[]");
+      list[index].done = !list[index].done;
+      localStorage.setItem("todoList", JSON.stringify(list));
+      renderTodo();
+    }
+
+    function renderTodo() {
+  const list = JSON.parse(localStorage.getItem("todoList") || "[]");
+  const ul = document.getElementById("todoList");
+  ul.innerHTML = "";
+
+  list.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.className = item.done ? "todo-item done" : "todo-item";
+
+    const span = document.createElement("span");
+    span.textContent = item.text;
+
+    // 切換完成狀態
+    li.onclick = () => toggleDone(index);
+
+    // 編輯按鈕
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.onclick = (e) => {
+      e.stopPropagation();
+      const newText = prompt("修改內容：", item.text);
+      if (newText !== null) {
+        list[index].text = newText.trim();
+        localStorage.setItem("todoList", JSON.stringify(list));
+        renderTodo();
+      }
+    };
+
+    // 刪除按鈕
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (confirm("確定要刪除這一項嗎？")) {
+        list.splice(index, 1);
+        localStorage.setItem("todoList", JSON.stringify(list));
+        renderTodo();
+      }
+    };
+
+    li.appendChild(span);
+    li.appendChild(editBtn);
+    li.appendChild(deleteBtn);
+    ul.appendChild(li);
+  });
+}  
+function goBack() {
+      window.location.href = "index.html";
+    }
+
+    window.onload = renderTodo;
+  </script>
+</body>
+</html>
+

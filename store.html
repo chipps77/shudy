@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>商店</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="idolTextWrapper">
+      <div id="idolText">用盤子換你喜歡的東西 🍽️</div>
+    </div>
+    <div class="plates">🍽️ 目前有：<span id="plateCount">0</span> 盤子</div>
+    <div class="buttons">
+      <button onclick="buyItem('bg_flower', 3)">🌼 裝飾品（3盤子）</button>
+      <button onclick="buyItem('cake', 2)">🍰 蛋糕（2盤子）</button>
+      <button onclick="buyItem('idol_egg', 5)">🥚 偶像蛋（5盤子）</button>
+      <button onclick="buyItem('vege', 1)"> 蔬菜（1盤子）</button>
+      <button onclick="buyItem('kimchi_rice', 2)"> 泡菜炒飯（2盤子）</button>
+      <button onclick="buyItem('rice', 1)"> 白飯（1盤子）</button>
+      <button onclick="goBack()">回首頁</button>
+    </div>
+  </div>
+
+  <script>
+    const quantityItems = ["cake", "vege", "kimchi_rice", "rice"];
+
+    function goBack() {
+      localStorage.setItem("fromStore", "true");
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("plateCount").textContent =
+      localStorage.getItem("plates") || "0";
+
+    function buyItem(itemKey, cost) {
+      const plates = parseInt(localStorage.getItem("plates") || "0");
+      if (plates >= cost) {
+        localStorage.setItem("plates", (plates - cost).toString());
+
+        if (quantityItems.includes(itemKey)) {
+          const current = parseInt(localStorage.getItem("item_" + itemKey) || "0");
+          localStorage.setItem("item_" + itemKey, (current + 1).toString());
+        } else {
+          localStorage.setItem("item_" + itemKey, "true");
+        }
+ 
+if (itemKey === "idol_egg") {
+  const roll = Math.random();
+
+  const hasHaku = localStorage.getItem("item_dog_haku") === "true";
+  const hasMata = localStorage.getItem("item_dog_mata") === "true";
+  const hasMoya = localStorage.getItem("item_dog_moya") === "true";
+
+  function giveCake(count = 1) {
+    const current = parseInt(localStorage.getItem("item_cake") || "0");
+    localStorage.setItem("item_cake", (current + count).toString());
+    alert("🍰 狗狗已擁有，改送蛋糕！");
+  }
+
+  if (roll < 0.3) {
+    if (!hasHaku) {
+      localStorage.setItem("item_dog_haku", "true");
+      alert("🎉 抽到了狗狗 Haku！");
+    } else {
+      giveCake();
+    }
+  } else if (roll < 0.6) {
+    if (!hasMata) {
+      localStorage.setItem("item_dog_mata", "true");
+      alert("🎉 抽到了狗狗 Mata！");
+    } else {
+      giveCake();
+    }
+  } else if (roll < 0.7) {
+    if (!hasMoya) {
+      localStorage.setItem("item_dog_moya", "true");
+      alert("🎉 抽到了狗狗 Moya！");
+    } else {
+      giveCake();
+    }
+  } else {
+    const current = parseInt(localStorage.getItem("item_rice") || "0");
+    localStorage.setItem("item_rice", (current + 3).toString());
+    alert("🍚 沒抽到狗狗，拿到了 3 碗白飯");
+  }
+}
+
+
+
+
+
+        document.getElementById("plateCount").textContent = localStorage.getItem("plates");
+        alert("購買成功：" + itemKey);
+      } else {
+        alert("你的盤子不夠唷！");
+      }
+    }
+  </script>
+</body>
+</html>
